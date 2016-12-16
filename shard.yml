@@ -1,5 +1,5 @@
-name: memoized.cr
-version: 0.1.0
+name: memoized
+version: 0.1.1
 
 authors:
   - maiha <maiha@wota.jp>
