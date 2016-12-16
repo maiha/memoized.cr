@@ -40,7 +40,7 @@ msg.get # we would get a new data after 1 minute
 ```crystal
 def int_adder
   cnt = Atomic(Int32).new(0)
-  ->(){ cnt.add(1); cnt.get }
+  -> { cnt.add(1); cnt.get }
 end
   
 always = Memoized(Int32).new(int_adder)

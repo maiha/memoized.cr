@@ -2,7 +2,7 @@ require "./spec_helper"
 
 private def int_adder
   cnt = Atomic(Int32).new(0)
-  ->(){ cnt.add(1); cnt.get }
+  -> { cnt.add(1); cnt.get }
 end
   
 describe Memoized do

@@ -31,19 +31,14 @@ class Memoized(T)
   end
 
   def cache? : T?
-    if cached = @cached
-      unless cached.keep.expired?
-        return cached.value
-      end
-    end
-    return nil
+    @cached.try{|c| c.keep.expired? ? nil : c.value }
   end
 
   def get : T
-    unless cache?
-      @cached = nil             # reset before invoke that would cause errors
-      @cached = Cached(T).new(@loader.call, @keep.cached)
-    end
-    @cached.try(&.value) || raise "BUG: @cached is not created in get"
+    cache? || fetch
+  end
+
+  protected def fetch : T
+    @loader.call.tap{|v| @cached = Cached(T).new(v, @keep.cached) }
   end
 end
