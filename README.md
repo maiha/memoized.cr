@@ -1,4 +1,4 @@
-# memoized.cr
+# memoized.cr [![Build Status](https://travis-ci.org/maiha/memoized.cr.svg?branch=master)](https://travis-ci.org/maiha/memoized.cr)
 
 Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
