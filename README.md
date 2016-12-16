@@ -12,7 +12,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.1.1
+    version: 0.2.0
 ```
 
 ## Usage
