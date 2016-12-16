@@ -1,38 +1,37 @@
 require "./spec_helper"
 
-private class Counter
-  property value : Int32 = 0
-  def succ!
-    @value += 1
-  end
-end
-
 private def int_adder
-  cnt  = Counter.new
-  ->(){ cnt.succ! }
+  cnt = Atomic(Int32).new(0)
+  ->(){ cnt.add(1); cnt.get }
 end
   
 describe Memoized do
-  counter = Memoized(Int32).new(int_adder, keep: 1.second)
+  always = Memoized(Int32).new(int_adder)
+  finite = Memoized(Int32).new(int_adder, 1.second)
 
   it "#cache? should return nil in default" do
-    counter.cache?.should eq(nil)
+    always.cache?.should eq(nil)
+    finite.cache?.should eq(nil)
   end
 
   it "#get should build value from loader" do
-    counter.get.should eq(1)
+    always.get.should eq(1)
+    finite.get.should eq(1)
   end
 
   it "#cache? should return cached value after #get" do
-    counter.cache?.should eq(1)
+    always.cache?.should eq(1)
+    finite.cache?.should eq(1)
   end
 
-  it "#cache? should return nil after keep time has gone" do
+  it "#cache? should be cleared when it exceeds specified keep time" do
     sleep 1
-    counter.cache?.should eq(nil)
+    always.cache?.should eq(1)
+    finite.cache?.should eq(nil)
   end
 
   it "#get should refresh data after cache has been expired" do
-    counter.get.should eq(2)
+    always.get.should eq(1)
+    finite.get.should eq(2)
   end
 end
