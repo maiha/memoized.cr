@@ -8,17 +8,19 @@ Time-based memoized library for [Crystal](http://crystal-lang.org/).
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.2.0
+    version: 0.3.0
 ```
 
 ## Usage
 
-- `Memoized(T).new(proc : -> T)` # memoize forever
-- `Memoized(T).new(proc : -> T, span : Time::Span)` # memoize at most the span
-- `Memoized(T).new(proc : -> T, path : String)` # memoize until path is updated
-- `Memoized(T)#get : T`
-- `Memoized(T)#cache? : T?`
-- `Memoized(T)#clear : Nil`
+```
+Memoized(T).new(proc : -> T)                    # memoize forever
+Memoized(T).new(proc : -> T, span : Time::Span) # memoize at most the span
+Memoized(T).new(proc : -> T, path : String)     # memoize until path is updated
+Memoized(T)#get : T
+Memoized(T)#cache? : T?
+Memoized(T)#clear : Nil
+```
 
 ```crystal
 require "memoized"
@@ -38,8 +40,6 @@ msg.get # => 90 (we would get a new data after 1 minute)
 - **Finite** : refresh after given Time::Span
 - **Source** : refresh after given filename is updated (checked by `mtime`)
 
-#### **always**, **finite**
-
 ```crystal
 def int_adder
   cnt = Atomic(Int32).new(0)
@@ -51,6 +51,8 @@ finite = Memoized(Int32).new(int_adder, 1.minute)
 source = Memoized(Int32).new(int_adder, "/tmp/file")
 ```
 
+#### **always**, **finite**
+
 |time    | always.cache? | always.get | finite.cache? | finite.get | 
 |-------:|:-------------:|:----------:|:-------------:|:----------:|
 |00:00:01|            nil|           1|            nil|           1|
@@ -58,7 +60,7 @@ source = Memoized(Int32).new(int_adder, "/tmp/file")
 |00:01:00|              1|           1|            nil|           2|
 |00:01:01|              1|           1|              2|           2|
 
-- **source**
+#### **source**
 
 ```crystal
 # (when `/tmp/file` not found)

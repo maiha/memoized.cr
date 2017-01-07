@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 .PHONY : test
-test: spec check_version_mismatch
+test: check_version_mismatch spec
 
 .PHONY : spec
 spec:
