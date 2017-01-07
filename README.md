@@ -4,10 +4,6 @@ Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
 - crystal: 0.20.4
 
-## Installation
-
-Add this to your application's `shard.yml`:
-
 ```yaml
 dependencies:
   memoized:
@@ -19,23 +15,27 @@ dependencies:
 
 - `Memoized(T).new(proc : -> T)` # memoize forever
 - `Memoized(T).new(proc : -> T, span : Time::Span)` # memoize at most the span
+- `Memoized(T).new(proc : -> T, path : String)` # memoize until path is updated
 
 ```crystal
 require "memoized"
 
 # some high cost operation
-builder = ->() { File.read("/var/log/message") }
+work = ->() { Dir["/tmp/*"].size }
 
-msg = Memoized(String).new(builder, 1.minute)
-msg.get # => String (cached at most 1 minute)
-
-msg.get # we would get a new data after 1 minute
+msg = Memoized(Int32).new(work, 1.minute)
+msg.get # => 82
+msg.get # => 82 (cached at most 1 minute)
+msg.get # => 90 (we would get a new data after 1 minute)
 ```
 
-### Keep options (2nd arg)
+### cache policy (2nd arg)
 
-- Always : keep the data forever (this is default)
-- Finite : refresh after given Time::Span
+- **Always** : keep forever (this is default)
+- **Finite** : refresh after given Time::Span
+- **Source** : refresh after given filename is updated (checked by `mtime`)
+
+#### **always**, **finite**
 
 ```crystal
 def int_adder
@@ -45,6 +45,7 @@ end
   
 always = Memoized(Int32).new(int_adder)
 finite = Memoized(Int32).new(int_adder, 1.minute)
+source = Memoized(Int32).new(int_adder, "/tmp/file")
 ```
 
 |time    | always.cache? | always.get | finite.cache? | finite.get | 
@@ -53,6 +54,26 @@ finite = Memoized(Int32).new(int_adder, 1.minute)
 |00:00:02|              1|           1|              1|           1|
 |00:01:00|              1|           1|            nil|           2|
 |00:01:01|              1|           1|              2|           2|
+
+- **source**
+
+```crystal
+# (when `/tmp/file` not found)
+source.get # => 1
+source.get # => 1
+
+# touch /tmp/file
+source.get # => 2
+source.get # => 2
+source.get # => 2
+
+# touch /tmp/file
+source.get # => 3
+source.get # => 3
+
+# rm /tmp/file
+source.get # => 3
+```
 
 ### macros to memoize method
 
@@ -110,15 +131,14 @@ private def build_shared_data
 
 ## Roadmap
 
-### 0.2.0
-
-- [x] add an option to cache forever
-- [x] add class method macros for helpers
-
 ### 0.3.0
 
-- [ ] memoize instance method
+- [x] source policy
 - [ ] discard cache, or force get
+
+### 0.4.0
+
+- [ ] memoize instance method
 - [ ] error handling (should be a monad?)
 
 
