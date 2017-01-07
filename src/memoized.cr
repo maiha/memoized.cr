@@ -16,6 +16,10 @@ class Memoized(T)
     cache? || fetch
   end
 
+  def clear : Nil
+    @cached = nil
+  end
+
   protected def fetch : T
     @loader.call.tap{|v| @cached = Cached(T).new(v, @policy.cached) }
   end

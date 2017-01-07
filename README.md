@@ -16,6 +16,9 @@ dependencies:
 - `Memoized(T).new(proc : -> T)` # memoize forever
 - `Memoized(T).new(proc : -> T, span : Time::Span)` # memoize at most the span
 - `Memoized(T).new(proc : -> T, path : String)` # memoize until path is updated
+- `Memoized(T)#get : T`
+- `Memoized(T)#cache? : T?`
+- `Memoized(T)#clear : Nil`
 
 ```crystal
 require "memoized"
@@ -134,7 +137,7 @@ private def build_shared_data
 ### 0.3.0
 
 - [x] source policy
-- [ ] discard cache, or force get
+- [x] clear cache
 
 ### 0.4.0
 
