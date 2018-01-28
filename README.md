@@ -2,7 +2,7 @@
 
 Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
-- crystal: 0.20.4
+- crystal: 0.24.1
 
 ```yaml
 dependencies:
