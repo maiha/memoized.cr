@@ -31,7 +31,7 @@ class Memoized(T)
     end
 
     private def get_ticks : Int64
-      File.info(path).modification_time.epoch_ms
+      File.info(path).modification_time.to_unix_ms
     rescue
       0_i64
     end
