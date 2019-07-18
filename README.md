@@ -2,21 +2,24 @@
 
 Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
-- crystal: 0.27.0
+- crystal: 0.29.0
 
 ```yaml
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.5.0
+    version: 0.6.0
 ```
 
 ## Usage
 
 ```
 Memoized(T).new(proc : -> T)                    # memoize forever
+Memoized(T).new(&blk : -> T)                    # memoize forever
 Memoized(T).new(proc : -> T, span : Time::Span) # memoize at most the span
+Memoized(T).new(span : Time::Span, &blk : -> T) # memoize at most the span
 Memoized(T).new(proc : -> T, path : String)     # memoize until path is updated
+Memoized(T).new(path : String, &blk : -> T)     # memoize until path is updated
 Memoized(T)#get : T
 Memoized(T)#cache? : T?
 Memoized(T)#clear : Nil
@@ -25,10 +28,9 @@ Memoized(T)#clear : Nil
 ```crystal
 require "memoized"
 
-# some high cost operation
-work = ->() { Dir["/tmp/*"].size }
-
-msg = Memoized(Int32).new(work, 1.minute)
+msg = Memoized(Int32).new(1.minute) do
+  Dir["/tmp/*"].size # some high cost operation
+end
 msg.get # => 82
 msg.get # => 82 (cached at most 1 minute)
 msg.get # => 90 (we would get a new data after 1 minute)
@@ -98,22 +100,6 @@ cached_foo = Memoized.int(foo)
 
 - TODO: I'd like to write like `Memozied(Int32).cache(foo)`. Is it possible?
 
-### Block invocation
-
-```crystal
-msg1 = Memoized(Array(Int32)).new do
-  (0..255).to_a.repeated_combinations(4)
-end
-
-msg2 = Memoized(Array(Int32)).new(1.minute) do
-  (0..255).to_a.repeated_combinations(4)
-end
-
-msg3 = Memoized(Array(Int32)).new("/path/to/cache") do
-  (0..255).to_a.repeated_combinations(4)
-end
-```
-
 ## Examples
 
 Let's speed up Kemal apps with fragment cache.
@@ -152,12 +138,7 @@ private def build_shared_data
 
 ## Roadmap
 
-### 0.3.0
-
-- [x] source policy
-- [x] clear cache
-
-### 0.4.0
+### 0.7.0
 
 - [ ] memoize instance method
 - [ ] error handling (should be a monad?)
