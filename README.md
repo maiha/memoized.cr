@@ -98,6 +98,22 @@ cached_foo = Memoized.int(foo)
 
 - TODO: I'd like to write like `Memozied(Int32).cache(foo)`. Is it possible?
 
+### Block invocation
+
+```crystal
+msg1 = Memoized(Array(Int32)).new do
+  (0..255).to_a.repeated_combinations(4)
+end
+
+msg2 = Memoized(Array(Int32)).new(1.minute) do
+  (0..255).to_a.repeated_combinations(4)
+end
+
+msg3 = Memoized(Array(Int32)).new("/path/to/cache") do
+  (0..255).to_a.repeated_combinations(4)
+end
+```
+
 ## Examples
 
 Let's speed up Kemal apps with fragment cache.
