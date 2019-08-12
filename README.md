@@ -14,12 +14,14 @@ dependencies:
 ## Usage
 
 ```
-Memoized(T).new(proc : -> T)                    # memoize forever
-Memoized(T).new(&blk : -> T)                    # memoize forever
-Memoized(T).new(proc : -> T, span : Time::Span) # memoize at most the span
-Memoized(T).new(span : Time::Span, &blk : -> T) # memoize at most the span
-Memoized(T).new(proc : -> T, path : String)     # memoize until path is updated
-Memoized(T).new(path : String, &blk : -> T)     # memoize until path is updated
+Memoized(T).new(proc : -> T)                     # memoize forever
+Memoized(T).new(&blk : -> T)                     # memoize forever
+Memoized(T).new(proc : -> T, span : Time::Span)  # memoize at most the span
+Memoized(T).new(span : Time::Span, &blk : -> T)  # memoize at most the span
+Memoized(T).new(proc : -> T, path : String)      # memoize until path is updated
+Memoized(T).new(path : String, &blk : -> T)      # memoize until path is updated
+Memoized(T).new(proc : -> T, change : Change(U)) # memoize until the value changed
+Memoized(T).new(change : -> U, &blk : ->T)       # memoize until the value changed
 Memoized(T)#get : T
 Memoized(T)#cache? : T?
 Memoized(T)#clear : Nil
@@ -41,6 +43,7 @@ msg.get # => 90 (we would get a new data after 1 minute)
 - **Always** : keep forever (this is default)
 - **Finite** : refresh after given Time::Span
 - **Source** : refresh after given filename is updated (checked by `mtime`)
+- **Change** : refresh after given proc returns different value
 
 ```crystal
 def int_adder
@@ -80,6 +83,21 @@ source.get # => 3
 
 # rm /tmp/file
 source.get # => 3
+```
+
+#### **change**
+
+`Change` policy keeps `expired?` logic as `Proc`, so it can emulate all policies.
+
+```crystal
+source = Memoized(Int32).new(int_adder, "/tmp/file")
+
+# can be rewriten by `Change` policy as follows
+
+mtime_watcher = Memoized::Change(Time).new {
+  File.info("/tmp/file").modification_time
+}
+source = Memoized(Int32).new(int_adder, mtime__watcher)
 ```
 
 ### macros to memoize method

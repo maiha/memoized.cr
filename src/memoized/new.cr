@@ -22,4 +22,8 @@ class Memoized(T)
   def self.new(path : String, &loader : -> T)
     new(loader, path)
   end
+
+  def self.new(change : -> U, &loader : -> T) forall U
+    new(loader, Change(U).new(change))
+  end
 end

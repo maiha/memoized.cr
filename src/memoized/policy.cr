@@ -36,4 +36,11 @@ class Memoized(T)
       0_i64
     end
   end
+
+  record Change(U), proc : Proc(U), current : U? = nil  do
+    include Policy
+    def expired? ; @current != proc.call          ; end
+    def cached   ; Change(U).new(proc, proc.call) ; end
+    def self.new(&proc : -> U); new(proc)         ; end
+  end
 end
