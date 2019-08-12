@@ -2,13 +2,13 @@
 
 Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
-- crystal: 0.29.0
+- crystal: 0.30.0
 
 ```yaml
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.6.0
+    version: 0.7.0
 ```
 
 ## Usage
