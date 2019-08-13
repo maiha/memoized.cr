@@ -13,7 +13,8 @@ dependencies:
 
 ## Usage
 
-```
+```crystal
+# Instance Creations
 Memoized(T).new(proc : -> T)                     # memoize forever
 Memoized(T).new(&blk : -> T)                     # memoize forever
 Memoized(T).new(proc : -> T, span : Time::Span)  # memoize at most the span
@@ -22,9 +23,12 @@ Memoized(T).new(proc : -> T, path : String)      # memoize until path is updated
 Memoized(T).new(path : String, &blk : -> T)      # memoize until path is updated
 Memoized(T).new(proc : -> T, change : Change(U)) # memoize until the value changed
 Memoized(T).new(change : -> U, &blk : ->T)       # memoize until the value changed
-Memoized(T)#get : T
-Memoized(T)#cache? : T?
-Memoized(T)#clear : Nil
+
+# Instance Methods
+Memoized(T)#get : T          # Returns the cached value, otherwise evaluates blk
+Memoized(T)#cache? : T?      # Returns the cached value or nil
+Memoized(T)#cached? : Cache? # Returns a snapshot of the cache if exists
+Memoized(T)#clear : Nil      # Clears cached value
 ```
 
 ```crystal
@@ -38,7 +42,41 @@ msg.get # => 82 (cached at most 1 minute)
 msg.get # => 90 (we would get a new data after 1 minute)
 ```
 
-### cache policy (2nd arg)
+### Cached info
+
+`Memoized#cached?` and `Memoized#cached` return a snapshot of the cache as `Memoized::Cache` if exists.
+
+```crystal
+Memoized::Cache#value  : T          # Returns the cached value
+Memoized::Cache#policy : Policy     # Returns a revocation policy for the cache
+Memoized::Cache#at     : Time       # Returns the time when the cache was created
+Memoized::Cache#taken  : Time::Span # Returns the time taken to execute the block
+
+# shortcuts
+Memoized#cached_at     : Time
+Memoized#cached_at?    : Time?
+Memoized#cached_taken  : Time::Span
+Memoized#cached_taken? : Time::Span?
+Memoized#cached_sec    : Float64
+Memoized#cached_sec?   : Float64?
+Memoized#cached_msec   : Float64
+Memoized#cached_msec?  : Float64?
+```
+
+```crystal
+m = Memoized(Int32).new{ 1 }
+m.cached?                         # => nil
+m.cached                          # raises Memoized::NotCached
+
+m.get                             # => 1
+m.cached.at                       # => 2019-08-13 16:11:03.913925000
+m.cached.taken.total_milliseconds # => 0.001
+m.cached_msec                     # => 0.001 (handy shortcut)
+```
+
+### Revocation policy
+
+It can be given at 2nd arg, or 1st arg with &blk.
 
 - **Always** : keep forever (this is default)
 - **Finite** : refresh after given Time::Span
@@ -156,9 +194,9 @@ private def build_shared_data
 
 ## Roadmap
 
-### 0.7.0
+### 0.8.0
 
-- [ ] memoize instance method
+- [x] take proc as a logic of revocation cache
 - [ ] error handling (should be a monad?)
 
 
