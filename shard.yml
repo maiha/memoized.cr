@@ -1,6 +1,11 @@
 name: memoized
 version: 0.8.0
 
+dependencies:
+  pretty:
+    github: maiha/pretty.cr
+    version: ">= 0.9.0"
+
 authors:
   - maiha <maiha@wota.jp>
 

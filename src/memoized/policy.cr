@@ -6,27 +6,27 @@ class Memoized(T)
 
   struct Always
     include Policy
-    def expired? ; false ; end
-    def cached   ; self  ; end
+    def expired? : Bool   ; false ; end
+    def cached   : Policy ; self  ; end
   end
 
-  record Finite, span : Time::Span, max : Time = Time.now + span do
+  record Finite, span : Time::Span, max : Time = Pretty.now + span do
     include Policy
-    def expired? ; max < Time.now   ; end
-    def cached   ; Finite.new(span) ; end
+    def expired? : Bool   ; max < Pretty.now   ; end
+    def cached   : Policy ; Finite.new(span) ; end
   end
 
   record Source, path : String, ttl : Int64? = nil do
     include Policy
 
-    def expired?
+    def expired? : Bool
       return true if ttl.nil?
       ticks = get_ticks
       return false if ticks == 0
       return ttl.not_nil! < ticks
     end
 
-    def cached
+    def cached : Policy
       Source.new(path, get_ticks)
     end
 
@@ -39,8 +39,8 @@ class Memoized(T)
 
   record Change(U), proc : Proc(U), current : U? = nil  do
     include Policy
-    def expired? ; @current != proc.call          ; end
-    def cached   ; Change(U).new(proc, proc.call) ; end
+    def expired? : Bool   ; @current != proc.call          ; end
+    def cached   : Policy ; Change(U).new(proc, proc.call) ; end
     def self.new(&proc : -> U); new(proc)         ; end
   end
 end

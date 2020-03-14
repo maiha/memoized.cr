@@ -1,3 +1,5 @@
+require "pretty"
+
 require "./memoized/*"
 
 class Memoized(T)
@@ -40,9 +42,9 @@ class Memoized(T)
   def cached_msec?  : Float64?   ; cached?.try(&.taken.total_milliseconds); end
 
   protected def fetch : T
-    t1 = Time.now
+    t1 = Pretty.now
     v  = @loader.call
-    t2 = Time.now
+    t2 = Pretty.now
     @cached = Cached(T).new(v, @policy.cached, t2, t2 - t1)
     return v
   end
