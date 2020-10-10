@@ -1,11 +1,11 @@
 SHELL=/bin/bash
 
 .PHONY : ci
-ci: check_version_mismatch spec
+ci: check_version_mismatch shard.lock
+	./ci
 
-.PHONY : spec
-spec:
-	crystal spec -v --fail-fast
+shard.lock: shard.yml
+	shards update
 
 .PHONY : check_version_mismatch
 check_version_mismatch: shard.yml README.md
