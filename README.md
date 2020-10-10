@@ -8,7 +8,7 @@ Time-based memoized library for [Crystal](http://crystal-lang.org/).
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.9.0
+    version: 0.9.1
 ```
 
 ## Usage
