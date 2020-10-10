@@ -10,8 +10,16 @@ class Memoized(T)
     def cached   : Policy ; self  ; end
   end
 
-  record Finite, span : Time::Span, max : Time = Pretty.now + span do
+  struct Finite
     include Policy
+
+    getter span : Time::Span
+    getter max  : Time
+
+    def initialize(@span, max : Time? = nil)
+      @max = max || Pretty.now + span
+    end
+    
     def expired? : Bool   ; max < Pretty.now   ; end
     def cached   : Policy ; Finite.new(span) ; end
   end
