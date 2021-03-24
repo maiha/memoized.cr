@@ -1,14 +1,14 @@
-# memoized.cr [![Build Status](https://travis-ci.org/maiha/memoized.cr.svg?branch=master)](https://travis-ci.org/maiha/memoized.cr)
+# memoized.cr [![Build Status](https://travis-ci.org/maiha/memoized.cr.svg?branch=main)](https://travis-ci.org/maiha/memoized.cr)
 
 Time-based memoized library for [Crystal](http://crystal-lang.org/).
 
-- crystal: 0.27.2 0.33.0 0.34.0 0.35.1
+- crystal: 0.27.2 0.33.0 0.36.1, 1.0.0
 
 ```yaml
 dependencies:
   memoized:
     github: maiha/memoized.cr
-    version: 0.9.1
+    version: 1.0.0
 ```
 
 ## Usage

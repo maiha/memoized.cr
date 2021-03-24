@@ -13,5 +13,5 @@ function test {
 
 test 0.27.2
 test 0.33.0
-test 0.34.0 --exclude-warnings lib
-test 0.35.1 --exclude-warnings lib
+test 0.36.1 --exclude-warnings lib
+test 1.0.0
